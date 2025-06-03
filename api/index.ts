@@ -5,7 +5,7 @@ const app = express();
 const bodyParser = require('body-parser');
 
 // Import routes
-const userRoutes = require('../routes/userRoutes');
+// const userRoutes = require('../routes/userRoutes');
 const pageRoutes = require('../routes/pageRoutes');
 
 // Create application/x-www-form-urlencoded parser
@@ -15,7 +15,7 @@ app.use(express.static('public'));
 
 // Use routes
 app.use('/', pageRoutes);
-app.use('/', userRoutes);
+// app.use('/', userRoutes);
 
 app.listen(3000, () => console.log('Server ready on port 3000.'));
 
