@@ -10,22 +10,22 @@ export default class UserRoutes {
     }
 
     private configureRoutes() {
-        // GET api/users/uploadForm
+        // GET api/users/upload
         this.router.get(
             `/users/upload`,
             this.userController.getUploadForm
+        );
+
+        // POST api/users
+        this.router.post(
+            `/users`,
+            this.userController.createUser
         );
 
         // GET api/users
         this.router.get(
             `/users`,
             this.userController.getAllUsers
-        );
-
-         // POST api/users
-         this.router.post(
-            `/users`,
-            this.userController.createUser
         );
 
         // // GET api/users/me

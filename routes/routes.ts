@@ -5,15 +5,13 @@ import UserRoutes from './user.route';
 import PageRoutes from './page.route';
 
 export async function SetRoutes(app: Application) {
-  const apiRouter = Router();
-  const pageRouter = Router();
+  const router = Router();
 
-  app.use('/api', apiRouter);
-  new CategoryRoutes(apiRouter);
-  new UserRoutes(apiRouter);
+  app.use('/api', router);
 
-  app.use('/', pageRouter);
-  new PageRoutes(pageRouter);
+  new CategoryRoutes(router);
+  new UserRoutes(router);
+  new PageRoutes(app);
 
   // Handle 404 errors
   app.use((req, res) => {

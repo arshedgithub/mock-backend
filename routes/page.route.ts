@@ -17,4 +17,4 @@ export default class PageRoutes {
             res.sendFile(path.join(__dirname, '..', 'views', 'about.htm'));
         });
     }
-} 
+}
