@@ -1,21 +1,29 @@
 import { Application, Router } from 'express';
 
 import CategoryRoutes from './category.route';
+import UserRoutes from './user.route';
+import PageRoutes from './page.route';
 
 export async function SetRoutes(app: Application) {
-  const router = Router();
+  const apiRouter = Router();
+  const pageRouter = Router();
 
-  app.use('/api', router);
+  app.use('/api', apiRouter);
+  new CategoryRoutes(apiRouter);
+  new UserRoutes(apiRouter);
 
-  new CategoryRoutes(router);
+  app.use('/', pageRouter);
+  new PageRoutes(pageRouter);
 
+  // Handle 404 errors
   app.use((req, res) => {
     res.status(404).json({
       success: false,
-      message: 'API endpoint not found'
+      message: 'Endpoint not found'
     });
   });
 
+  // Global error handler
   app.use((err: Error, req: any, res: any, next: any) => {
     console.error(err.stack);
     res.status(500).json({
