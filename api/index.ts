@@ -1,22 +1,61 @@
-require('dotenv').config();
+import express, { Application } from 'express';
+import { config } from 'dotenv';
+import { ExpressLoader, MongooseLoader } from '../loaders';
+import { AppConfig } from '../config';
 
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
+config();
 
-// Import routes
-// const userRoutes = require('../routes/userRoutes');
-const pageRoutes = require('../routes/pageRoutes');
+class Server {
+    private app: Application;
+    private expressLoader: ExpressLoader;
+    private mongooseLoader: MongooseLoader;
 
-// Create application/x-www-form-urlencoded parser
-const urlencodedParser = bodyParser.urlencoded({ extended: false });
+    constructor() {
+        this.app = express();
+        this.expressLoader = new ExpressLoader(this.app);
+        this.mongooseLoader = MongooseLoader.getInstance();
+    }
 
-app.use(express.static('public'));
+    private async start(): Promise<void> {
+        try {
+            await this.mongooseLoader.connect();
+            await this.expressLoader.load();
 
-// Use routes
-app.use('/', pageRoutes);
-// app.use('/', userRoutes);
+            this.app.listen(AppConfig.PORT, () => {
+                console.log(`
+                🚀 Server is running!
+                📡 Port: ${AppConfig.PORT}
+                🌍 Environment: ${process.env.NODE_ENV || 'development'}
+                ⏰ Time: ${new Date().toLocaleString()}
+                `);
+            });
 
-app.listen(3000, () => console.log('Server ready on port 3000.'));
+            // Handle uncaught exceptions
+            process.on('uncaughtException', (error: Error) => {
+                console.error('Uncaught Exception:', error);
+                process.exit(1);
+            });
 
-module.exports = app;
+            // Handle unhandled promise rejections
+            process.on('unhandledRejection', (reason: any) => {
+                console.error('Unhandled Rejection:', reason);
+                process.exit(1);
+            });
+
+        } catch (error) {
+            console.error('Failed to start server:', error);
+            process.exit(1);
+        }
+    }
+
+    public static async bootstrap(): Promise<void> {
+        const server = new Server();
+        await server.start();
+    }
+}
+
+// Start the server
+Server.bootstrap().catch(error => {
+    console.error('Failed to bootstrap server:', error);
+    process.exit(1);
+});
